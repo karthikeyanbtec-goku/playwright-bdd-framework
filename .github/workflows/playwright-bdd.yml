@@ -1,0 +1,43 @@
+name: Playwright BDD Enterprise Tests
+
+on:
+  push:
+    branches: [ main, master ]
+  pull_request:
+    branches: [ main, master ]
+
+jobs:
+  test:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+    
+    - uses: actions/setup-node@v3
+      with:
+        node-version: 18
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Install Playwright Browsers
+      run: npx playwright install --with-deps
+      
+    - name: Run Playwright BDD tests in QA env
+      run: npm run test:qa
+      env:
+        ENV: qa
+        BASE_URL: https://qa.example.com
+        ADMIN_USER: ${{ secrets.ADMIN_USER }}
+        ADMIN_PASS: ${{ secrets.ADMIN_PASS }}
+        
+    - name: Generate Allure Report
+      run: npx allure generate allure-results --clean -o allure-report
+      if: always()
+
+    - uses: actions/upload-artifact@v3
+      if: always()
+      with:
+        name: allure-report
+        path: allure-report/
+        retention-days: 10

@@ -1,0 +1,30 @@
+{
+    "shipping": {
+        "valid": {
+            "firstName": "John",
+            "lastName": "Doe",
+            "postalCode": "12345"
+        },
+        "invalid": {
+            "firstName": "Jane",
+            "lastName": "Smith",
+            "postalCode": ""
+        }
+    },
+    "products": {
+        "backpack": "Sauce Labs Backpack",
+        "bikeLight": "Sauce Labs Bike Light",
+        "fleeceJacket": "Sauce Labs Fleece Jacket",
+        "boltTShirt": "Sauce Labs Bolt T-Shirt"
+    },
+    "users": {
+        "standard": "standard_user",
+        "lockedOut": "locked_out_user",
+        "problem": "problem_user"
+    },
+    "errorMessages": {
+        "lockedOut": "Epic sadface: Sorry, this user has been locked out.",
+        "invalidLogin": "Epic sadface: Username and password do not match any user in this service",
+        "missingPostalCode": "Error: Postal Code is required"
+    }
+}

@@ -1,0 +1,11 @@
+node_modules/
+playwright-report/
+allure-results/
+allure-report/
+reports/
+test-results/
+videos/
+.env*
+!.env.qa
+.git/
+.github/

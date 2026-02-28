@@ -27,8 +27,8 @@ BeforeAll(async function () {
 
 Before(async function (this: CustomWorld, scenario) {
     const context = await browser.newContext({
-        baseURL: process.env.BASE_URL,
-        recordVideo: { dir: './videos' }
+        baseURL: process.env.BASE_URL
+        // recordVideo: { dir: './videos' } // Uncomment to record videos
     });
 
     const page = await context.newPage();

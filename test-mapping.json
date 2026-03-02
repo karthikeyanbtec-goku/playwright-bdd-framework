@@ -25,6 +25,18 @@
             "tags": "@checkout"
         },
         {
+            "pattern": "src/features/cart.feature",
+            "tags": "@cart"
+        },
+        {
+            "pattern": "src/features/about.feature",
+            "tags": "@about"
+        },
+        {
+            "pattern": "src/steps/cart_about.steps.ts",
+            "tags": "@cart or @about"
+        },
+        {
             "pattern": "src/utils/**/*",
             "tags": "@smoke"
         }

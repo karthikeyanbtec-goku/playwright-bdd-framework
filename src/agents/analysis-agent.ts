@@ -14,8 +14,23 @@ interface TestMapping {
 
 function getChangedFiles(): string[] {
     try {
-        const diff = execSync('git diff --name-only origin/main...HEAD || git diff --name-only HEAD').toString();
-        return diff.split('\n').filter(file => file.trim().length > 0);
+        // Includes staged, unstaged, and untracked changes for more robust local detection
+        const commands = [
+            'git diff --name-only origin/main...HEAD', // Commits against origin/main
+            'git diff --cached --name-only',           // Staged changes
+            'git diff --name-only',                  // Unstaged changes
+            'git ls-files --others --exclude-standard' // Untracked changes
+        ];
+
+        const files = new Set<string>();
+        for (const cmd of commands) {
+            try {
+                const output = execSync(cmd, { stdio: ['pipe', 'pipe', 'ignore'] }).toString();
+                output.split('\n').filter(f => f.trim().length > 0).forEach(f => files.add(f));
+            } catch (e) { /* ignore command failures */ }
+        }
+
+        return Array.from(files);
     } catch (error) {
         console.warn('Could not determine git diff, falling back to default tags.');
         return [];

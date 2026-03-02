@@ -12,6 +12,7 @@ jobs:
     runs-on: ubuntu-latest
     outputs:
       tags: ${{ steps.analysis.outputs.tags }}
+      matrix: ${{ steps.analysis.outputs.matrix }}
     steps:
     - uses: actions/checkout@v4
       with:
@@ -24,7 +25,7 @@ jobs:
     - name: Install dependencies
       run: npm ci
       
-    - name: Run Analysis Agent
+    - name: Run Analysis Agent (with Coordinator)
       id: analysis
       run: npx ts-node src/agents/analysis-agent.ts
 
@@ -35,7 +36,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        shard: [1, 2, 3, 4, 5] # Tier 2: Dynamic Sharding (Simplified for now)
+        shard: ${{ fromJSON(needs.analyze.outputs.matrix) }}
     steps:
     - uses: actions/checkout@v4
     

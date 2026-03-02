@@ -14,7 +14,6 @@ interface TestMapping {
 
 function getChangedFiles(): string[] {
     try {
-        // Get changed files compared to main/master or current branch changes
         const diff = execSync('git diff --name-only origin/main...HEAD || git diff --name-only HEAD').toString();
         return diff.split('\n').filter(file => file.trim().length > 0);
     } catch (error) {
@@ -46,6 +45,17 @@ function resolveTags(changedFiles: string[], mappingData: TestMapping): string {
     return Array.from(selectedTags).join(' or ');
 }
 
+function calculateShards(tags: string): number[] {
+    // Basic heuristic: @smoke gets 1-2 shards, full suite gets more
+    // In a real scenario, this would check total test count per tag
+    let count = 2;
+    if (tags.includes('@smoke')) count = 2;
+    if (tags === '@login or @inventory or @checkout' || tags.includes('or')) count = 5;
+
+    // Return array [1, 2, ..., count] for GHA matrix fromJSON
+    return Array.from({ length: count }, (_, i) => i + 1);
+}
+
 async function run() {
     const mappingPath = path.resolve(__dirname, '../../test-mapping.json');
     if (!fs.existsSync(mappingPath)) {
@@ -56,9 +66,12 @@ async function run() {
     const mappingData: TestMapping = JSON.parse(fs.readFileSync(mappingPath, 'utf8'));
     const changedFiles = getChangedFiles();
     const tags = resolveTags(changedFiles, mappingData);
+    const shards = calculateShards(tags);
 
     console.log(`::set-output name=tags::${tags}`);
+    console.log(`::set-output name=matrix::${JSON.stringify(shards)}`);
     console.log(`Selected Tags: ${tags}`);
+    console.log(`Dynamic Shards: ${JSON.stringify(shards)}`);
 }
 
 run().catch(err => {

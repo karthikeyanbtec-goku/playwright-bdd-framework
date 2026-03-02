@@ -5,12 +5,37 @@ on:
     branches: [ main, master ]
   pull_request:
     branches: [ main, master ]
-  workflow_dispatch: # Allows manual triggering from the GitHub UI
+  workflow_dispatch:
 
 jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    outputs:
+      tags: ${{ steps.analysis.outputs.tags }}
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        fetch-depth: 0
+    
+    - uses: actions/setup-node@v4
+      with:
+        node-version: 22
+        
+    - name: Install dependencies
+      run: npm ci
+      
+    - name: Run Analysis Agent
+      id: analysis
+      run: npx ts-node src/agents/analysis-agent.ts
+
   test:
+    needs: analyze
     timeout-minutes: 60
     runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        shard: [1, 2, 3, 4, 5] # Tier 2: Dynamic Sharding (Simplified for now)
     steps:
     - uses: actions/checkout@v4
     
@@ -24,8 +49,8 @@ jobs:
     - name: Install Playwright Browsers
       run: npx playwright install --with-deps
       
-    - name: Run Playwright BDD tests in QA env
-      run: npm run test:qa
+    - name: Run Playwright BDD tests
+      run: npx cucumber-js --tags "${{ needs.analyze.outputs.tags }}"
       env:
         ENV: qa
         BASE_URL: https://qa.example.com
@@ -39,6 +64,6 @@ jobs:
     - uses: actions/upload-artifact@v4
       if: always()
       with:
-        name: allure-report
+        name: allure-report-shard-${{ matrix.shard }}
         path: allure-report/
         retention-days: 10

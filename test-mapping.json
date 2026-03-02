@@ -1,0 +1,33 @@
+{
+    "mappings": [
+        {
+            "pattern": "src/pages/login.page.ts",
+            "tags": "@login"
+        },
+        {
+            "pattern": "src/steps/login.steps.ts",
+            "tags": "@login"
+        },
+        {
+            "pattern": "src/pages/inventory.page.ts",
+            "tags": "@inventory"
+        },
+        {
+            "pattern": "src/steps/inventory.steps.ts",
+            "tags": "@inventory"
+        },
+        {
+            "pattern": "src/pages/checkout.page.ts",
+            "tags": "@checkout"
+        },
+        {
+            "pattern": "src/steps/checkout.steps.ts",
+            "tags": "@checkout"
+        },
+        {
+            "pattern": "src/utils/**/*",
+            "tags": "@smoke"
+        }
+    ],
+    "defaultTags": "@smoke"
+}
